@@ -39,9 +39,9 @@ StudentManager::StudentManager() {};
 void StudentManager::addStudent(const Student& student_param) {
     students.push_back(student_param);
 }
-bool StudentManager::removeStudent(const Student& student_param) {
+bool StudentManager::removeStudentById(int id) {
     for(size_t i; i < students.size(); ++i) {
-        if(students.at(i).getId() == student_param.getId()){
+        if(students.at(i).getId() == id){
             students.erase(students.begin() + i);
             return true;
         }
@@ -50,4 +50,60 @@ bool StudentManager::removeStudent(const Student& student_param) {
 }
 void StudentManager::display() const {
     for(const auto& student: students) student.display();
+}
+
+bool StudentManager::save(const std::string& filename) {
+    std::ofstream file(filename);
+    
+    if(!file.is_open()) {
+        std::cerr << "Error: Could not open file. \n";
+        return false;
+    }
+
+    file << "ID,Name,Age,Grade\n";
+
+    for(auto x: students) { 
+        file << x.getId() << "," << x.getName() << "," << x.getAge() << "," << x.getGrade() << "\n";
+    }
+
+    file.close();
+
+    std::cout << "Data successfully wirtten to file: " + filename << std::endl;
+    return true;
+}
+
+bool StudentManager::load(const std::string& file_path) {
+    std::ifstream file(file_path);
+
+    if(!file) {
+        std::cout << "Error: Unable to open file at path: " << file_path << std::endl;
+        return false;
+    }
+    
+    std::string line;
+    while(getline(file,line)) {
+        if(!line.empty()) {
+            auto student = parseLineToStudent(line);
+            students.push_back(student);
+        }
+    }
+
+    file.close();
+    return true;
+}
+
+Student parseLineToStudent(std::string line) {
+    std::stringstream ss(line);
+    std::string name, age_str, grade_str, id_str;
+
+    getline(ss, name, ',');
+    getline(ss, age_str, ',');
+    getline(ss, grade_str, ',');
+    getline(ss, id_str, ',');
+
+    int age = std::stoi(age_str);
+    int id = std::stoi(id_str);
+    int grade = std::stoi(grade_str);
+
+    return Student(name, age, id, grade);
 }

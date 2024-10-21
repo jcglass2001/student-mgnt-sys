@@ -3,6 +3,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <filesystem>
+#include <cstring>
 class Student
 {
     private:
@@ -11,6 +13,7 @@ class Student
         int grade;
         std::string name;
     public:
+        Student();
         Student(std::string name_param, int age_param, int id_param, int grade_param);
         std::string getName() const;
         int getAge() const;
@@ -32,6 +35,6 @@ class StudentManager
         void addStudent(const Student& student);
         bool removeStudent(const Student& student);
         void display() const;
-        void save();
-        void load();
+        bool save(const std::string& filename);
+        bool load(const std::string& file_path);
 };
