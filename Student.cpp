@@ -40,7 +40,7 @@ void StudentManager::addStudent(const Student& student_param) {
     students.push_back(student_param);
 }
 bool StudentManager::removeStudentById(int id) {
-    for(size_t i; i < students.size(); ++i) {
+    for(size_t i = 0; i < students.size(); ++i) {
         if(students.at(i).getId() == id){
             students.erase(students.begin() + i);
             return true;
@@ -81,7 +81,12 @@ bool StudentManager::load(const std::string& file_path) {
     }
     
     std::string line;
+    bool first_line = true;
     while(getline(file,line)) {
+        if(first_line){
+            first_line = false;
+            continue;
+        }
         if(!line.empty()) {
             auto student = parseLineToStudent(line);
             students.push_back(student);

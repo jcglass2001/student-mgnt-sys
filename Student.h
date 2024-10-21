@@ -33,7 +33,7 @@ class StudentManager
     public:
         StudentManager();
         void addStudent(const Student& student);
-        bool removeStudent(const Student& student);
+        bool removeStudentById(int id);
         void display() const;
         bool save(const std::string& filename);
         bool load(const std::string& file_path);

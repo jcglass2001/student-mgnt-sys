@@ -32,6 +32,7 @@ int main()
             break;
         case 4:
             saveAndExitInput(manager);
+            break;
         case 5:
             std::cout << "Exiting program..." << std::endl;
         default:
@@ -65,44 +66,54 @@ void addStudentInput(StudentManager &manager)
 }
 void removeStudentInput(StudentManager &manager)
 {
-    int id;
+    int id_input;
     std::cout << "Enter student ID: ";
-    std::cin >> id;
+    std::cin >> id_input;
 
-    if (manager.removeStudent(Student("", 0, id, 0)))
-    {
+    if (manager.removeStudentById(id_input)) 
         std::cout << "Student removed successfully..." << std::endl;
-    }
     else
-    {
         std::cout << "Student not found..." << std::endl;
-    }
 }
 
 void saveAndExitInput(StudentManager &manager)
 {
     std::string filename;
-    std::cout << "Enter filename: ";
+    std::cout << "Enter filename to save (or type 'cancel' to abort): ";
     std::cin >> filename;
+
+    if (filename == "cancel") {
+        std::cout << "Save canceled." << std::endl;
+        return;
+    }
     manager.save(filename);
+    std::cout << "Data saved. Exiting..." << std::endl;
 }
 void loadCsvInput(StudentManager &manager)
 {
     std::cout << "Loading saved files...\n";
-    auto saved_files = searchFilesInCurrentDirectoryByExtension(".csv");
-    if (saved_files.size() == 0) std::cout << "No saves found..." << std::endl;
-    else {
-        std::cout << "Found files: \n";
-        for(size_t i = 0; i < saved_files.size(); ++i) {
-            std::cout << "[" << i << "] " << saved_files.at(i) << "\n";
-        }
+    auto saved_files = searchFilesInCurrentDirectoryByExtension();
 
-        int input;
-        std::cout << "Select save: ";
-        std::cin >> input;
-
-        manager.load(saved_files.at(input));
+    if (saved_files.empty()) { 
+        std::cout << "No saves found..." << std::endl;
+        return;
     }
+
+    std::cout << "Found files: \n";
+    for(size_t i = 0; i < saved_files.size(); ++i) {
+        std::cout << "[" << i << "] " << saved_files.at(i) << "\n";
+    }
+
+    int input;
+    std::cout << "Select save: ";
+    
+    while(!(std::cin >> input) || input < 0 || input >= saved_files.size()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Invalid selection. Try again: ";
+    }
+
+    manager.load(saved_files[input]);
 
 }
 void showMenu()
@@ -114,13 +125,15 @@ void showMenu()
     std::cout << "4. Save & Exit" << "\n";
     std::cout << "5. Exit" << std::endl;
 }
-std::vector<std::string> searchFilesInCurrentDirectoryByExtension(std::string extension)
+
+const std::string CSV_EXTENSION = ".csv";
+std::vector<std::string> searchFilesInCurrentDirectoryByExtension()
 {
     std::vector<std::string> saves;
     std::string current_path = std::filesystem::current_path().string();
 
     for(const auto& entry : std::filesystem::directory_iterator(current_path)){
-        if(entry.is_regular_file() && entry.path().extension() == ".csv") {
+        if(entry.is_regular_file() && entry.path().extension() == CSV_EXTENSION) {
             saves.push_back(entry.path().filename().string());
         }
     }
