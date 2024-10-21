@@ -1,5 +1,6 @@
 #include <iostream>
 #include <filesystem>
+#include <vector>
 #include "Student.h"
 
 void addStudentInput(StudentManager &manager);
@@ -7,6 +8,7 @@ void removeStudentInput(StudentManager &manager);
 void saveAndExitInput(StudentManager &manager);
 void loadCsvInput();
 void showMenu();
+std::vector<std::string> searchFilesInCurrentDirectoryByExtension();
 
 int main()
 {
@@ -14,6 +16,7 @@ int main()
     int input;
 
     std::cout << "======= Student Management System =======" << "\n";
+    loadCsvInput();
     do
     {
         showMenu();

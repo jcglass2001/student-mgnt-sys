@@ -1,5 +1,5 @@
 #include <string>
-#include <vector>
+#include <unordered_map>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -14,7 +14,7 @@ class Student
         std::string name;
     public:
         Student();
-        Student(std::string name_param, int age_param, int id_param, int grade_param);
+        Student(const std::string& name_param, int age_param, int id_param, int grade_param);
         std::string getName() const;
         int getAge() const;
         int getId() const;
@@ -29,11 +29,11 @@ class Student
 class StudentManager
 {
     private:
-        std::vector<Student> students;
+        std::unordered_map<int, Student> students;
     public:
         StudentManager();
-        void addStudent(const Student& student);
-        bool removeStudentById(int id);
+        bool addStudent(const Student& student_param);
+        bool removeStudentById(int id_param);
         void display() const;
         bool save(const std::string& filename);
         bool load(const std::string& file_path);

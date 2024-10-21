@@ -1,6 +1,7 @@
 #include "Student.h"
 
-Student::Student(std::string name_param, int age_param, int id_param, int grade_param) :
+Student::Student() : name(""), age(0), id(0), grade(0) {};
+Student::Student(const std::string& name_param, int age_param, int id_param, int grade_param) :
     name(name_param), age(age_param), id(id_param), grade(grade_param) {};
 
 std::string Student::getName() const {
@@ -34,22 +35,27 @@ void Student::display() const {
               << std::setw(10) << "Grade:" << grade << std::endl;
 }
 
+
 StudentManager::StudentManager() {};
 
-void StudentManager::addStudent(const Student& student_param) {
-    students.push_back(student_param);
+bool StudentManager::addStudent(const Student& student_param) {
+    if (students.find(student_param.getId()) != students.end()) {
+        std::cout << "Error: Student with input ID already exists..." << std::endl;
+        return false;
+    }
+    students[student_param.getId()] = student_param;
+    return true;
 }
-bool StudentManager::removeStudentById(int id) {
-    for(size_t i = 0; i < students.size(); ++i) {
-        if(students.at(i).getId() == id){
-            students.erase(students.begin() + i);
-            return true;
-        }
+bool StudentManager::removeStudentById(int id_param) {
+    auto it = students.find(id_param);
+    if(it != students.end()) {
+        students.erase(it);
+        return true;
     }
     return false;
 }
 void StudentManager::display() const {
-    for(const auto& student: students) student.display();
+    for(const auto& entry: students) entry.second.display();
 }
 
 bool StudentManager::save(const std::string& filename) {
@@ -62,38 +68,14 @@ bool StudentManager::save(const std::string& filename) {
 
     file << "ID,Name,Age,Grade\n";
 
-    for(auto x: students) { 
-        file << x.getId() << "," << x.getName() << "," << x.getAge() << "," << x.getGrade() << "\n";
+    for(const auto& entry: students) { 
+        file << entry.second.getId() << "," << entry.second.getName() 
+             << "," << entry.second.getAge() << "," << entry.second.getGrade() << "\n";
     }
 
     file.close();
 
-    std::cout << "Data successfully wirtten to file: " + filename << std::endl;
-    return true;
-}
-
-bool StudentManager::load(const std::string& file_path) {
-    std::ifstream file(file_path);
-
-    if(!file) {
-        std::cout << "Error: Unable to open file at path: " << file_path << std::endl;
-        return false;
-    }
-    
-    std::string line;
-    bool first_line = true;
-    while(getline(file,line)) {
-        if(first_line){
-            first_line = false;
-            continue;
-        }
-        if(!line.empty()) {
-            auto student = parseLineToStudent(line);
-            students.push_back(student);
-        }
-    }
-
-    file.close();
+    std::cout << "Data successfully written to file: " + filename << std::endl;
     return true;
 }
 
@@ -112,3 +94,33 @@ Student parseLineToStudent(std::string line) {
 
     return Student(name, age, id, grade);
 }
+
+bool StudentManager::load(const std::string& file_path) {
+    std::ifstream file(file_path);
+
+    if(!file.is_open()) {
+        std::cout << "Error: Unable to open file at path: " << file_path << std::endl;
+        return false;
+    }
+    
+    std::string line;
+    bool first_line = true;
+    while(getline(file,line)) {
+        if(first_line){
+            first_line = false;
+            continue;
+        }
+        if(!line.empty()) {
+            try {
+                auto student = parseLineToStudent(line);
+                students[student.getId()] = student;
+            } catch (const std::exception& e) {
+                std::cerr << "Error parsing line: " << e.what() << std::endl;
+            }
+        }
+    }
+
+    file.close();
+    return true;
+}
+
