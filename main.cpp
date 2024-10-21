@@ -6,7 +6,7 @@
 void addStudentInput(StudentManager &manager);
 void removeStudentInput(StudentManager &manager);
 void saveAndExitInput(StudentManager &manager);
-void loadCsvInput();
+void loadCsvFiles(StudentManager &manager);
 void showMenu();
 std::vector<std::string> searchFilesInCurrentDirectoryByExtension();
 
@@ -16,36 +16,29 @@ int main()
     int input;
 
     std::cout << "======= Student Management System =======" << "\n";
-    loadCsvInput();
+    loadCsvFiles(manager);
     do
     {
         showMenu();
-
         std::cin >> input;
+
         switch (input)
         {
-        case 1:
-            addStudentInput(manager);
-            break;
-        case 2:
-            removeStudentInput(manager);
-            break;
-        case 3:
-            manager.display();
-            break;
-        case 4:
-            saveAndExitInput(manager);
-            break;
-        case 5:
-            std::cout << "Exiting program..." << std::endl;
-        default:
-            std::cout << "Invalid input. Please try again." << std::endl;
+            case 1: addStudentInput(manager); break;
+            case 2: removeStudentInput(manager); break;
+            case 3: manager.display(); break;
+            case 4: saveAndExitInput(manager); break;
+            case 5: std::cout << "Exiting program..." << std::endl; break;
+            default: std::cout << "Invalid input. Please try again." << std::endl; break;
         }
+
         std::cout << std::endl;
-    } while (input != 4);
+    } while (input != 5);
 
     return 0;
 }
+
+// Function to add a student given user input parameters
 void addStudentInput(StudentManager &manager)
 {
     int age, grade, id;
@@ -67,6 +60,8 @@ void addStudentInput(StudentManager &manager)
 
     manager.addStudent(Student(name, age, id, grade));
 }
+
+// Function to remove student given user input id
 void removeStudentInput(StudentManager &manager)
 {
     int id_input;
@@ -79,6 +74,7 @@ void removeStudentInput(StudentManager &manager)
         std::cout << "Student not found..." << std::endl;
 }
 
+// Function to save current student data to csv file
 void saveAndExitInput(StudentManager &manager)
 {
     std::string filename;
@@ -92,7 +88,9 @@ void saveAndExitInput(StudentManager &manager)
     manager.save(filename);
     std::cout << "Data saved. Exiting..." << std::endl;
 }
-void loadCsvInput(StudentManager &manager)
+
+// Function to load saved data from csv file
+void loadCsvFiles(StudentManager &manager)
 {
     std::cout << "Loading saved files...\n";
     auto saved_files = searchFilesInCurrentDirectoryByExtension();
@@ -119,6 +117,8 @@ void loadCsvInput(StudentManager &manager)
     manager.load(saved_files[input]);
 
 }
+
+// Function to display user options
 void showMenu()
 {
     std::cout << "Please choose an option: " << "\n";
@@ -129,6 +129,7 @@ void showMenu()
     std::cout << "5. Exit" << std::endl;
 }
 
+// Helper function of loadCsvFiles() to search csv files in current directory
 const std::string CSV_EXTENSION = ".csv";
 std::vector<std::string> searchFilesInCurrentDirectoryByExtension()
 {

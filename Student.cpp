@@ -83,10 +83,10 @@ Student parseLineToStudent(std::string line) {
     std::stringstream ss(line);
     std::string name, age_str, grade_str, id_str;
 
+    getline(ss, id_str, ',');
     getline(ss, name, ',');
     getline(ss, age_str, ',');
     getline(ss, grade_str, ',');
-    getline(ss, id_str, ',');
 
     int age = std::stoi(age_str);
     int id = std::stoi(id_str);
