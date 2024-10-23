@@ -55,7 +55,9 @@ bool StudentManager::removeStudentById(int id_param) {
     return false;
 }
 void StudentManager::display() const {
+    std::cout << "==================== Student List =====================";
     for(const auto& entry: students) entry.second.display();
+    std::cout << "=======================================================" << std::endl;
 }
 
 bool StudentManager::save(const std::string& filename) {
@@ -112,8 +114,8 @@ bool StudentManager::load(const std::string& file_path) {
         }
         if(!line.empty()) {
             try {
-                auto student = parseLineToStudent(line);
-                students[student.getId()] = student;
+                auto parsed_student = parseLineToStudent(line);
+                students[parsed_student.getId()] = parsed_student;
             } catch (const std::exception& e) {
                 std::cerr << "Error parsing line: " << e.what() << std::endl;
             }
